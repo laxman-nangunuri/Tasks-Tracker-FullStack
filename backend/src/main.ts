@@ -11,6 +11,7 @@ const config = new DocumentBuilder()
         .setTitle('Task Tracker API')
         .setDescription('Task Management APIs')
         .setVersion('1.0')
+        .addBasicAuth()
         .build();
 
 const document = SwaggerModule.createDocument(app,config,);

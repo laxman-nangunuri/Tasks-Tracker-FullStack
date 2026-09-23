@@ -1,8 +1,12 @@
-import { Body,Param, Controller, Get, Post, Put, Delete } from '@nestjs/common';
+import { Body,Param, Controller, Get, Post, Put, Delete, UseGuards } from '@nestjs/common';
 import { TasksService } from './tasks.service.js';
 import { CreateTaskDto } from './dto/create-task.dto.js';
 import { UpdateTaskDto } from './dto/update-task.dto.js';
+import { BasicAuthGuard } from '../auth/basic-auth/basic-auth.guard.js';
+import { ApiBasicAuth } from '@nestjs/swagger';
 
+@ApiBasicAuth()
+@UseGuards(BasicAuthGuard)
 @Controller('tasks')
 export class TasksController {
     constructor(

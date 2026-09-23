@@ -1,18 +1,26 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:3000/tasks";
+
+const authHeader ='Basic ' + btoa('admin:nest-password');
+
+const api = axios.create({
+  baseURL :"http://localhost:3000/tasks",
+  headers: {
+    Authorization: authHeader,
+  },
+});
 
 export const getTasks = () =>
-  axios.get(BASE_URL);
+  api.get('/');
 
 export const createTask = (task:any) =>
-  axios.post(BASE_URL, task);
+  api.post('/', task);
 
 export const deleteTask = (id:number) =>
-  axios.delete(`${BASE_URL}/${id}`);
+  api.delete(`/${id}`);
 
 export const updateTask = (
   id:number,
   task:any
 ) =>
-  axios.put(`${BASE_URL}/${id}`, task);
+  api.put(`/${id}`, task);
