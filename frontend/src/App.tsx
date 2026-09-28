@@ -3,6 +3,7 @@ import { getTasks } from './api/taskApi';
 import type { Task } from './types/task';
 import TaskForm from './components/TaskForm';
 import {createTask, deleteTask, updateTask} from './api/taskApi';
+import { ToastContainer, toast } from 'react-toastify';
 
 function App() {
 
@@ -11,6 +12,9 @@ function App() {
   const [error, setError] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [search, setSearch] = useState('');
+  const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editDescription, setEditDescription] = useState('');
 
   const loadTasks = async () => {
     setLoading(true);
@@ -21,7 +25,7 @@ function App() {
     }
     catch
     {
-      setError('Failed to Load Tasks');
+      setError('Failed to load tasks');
     }
     finally{
       setLoading(false);
@@ -37,6 +41,8 @@ function App() {
 
     await createTask(task);
 
+    toast.success('Task created successfully');
+
     await loadTasks();
   };
 
@@ -49,14 +55,36 @@ function App() {
       status,
     });
 
+    toast.success('Task Updated Successfully');
+
     await loadTasks();
   };
 
   const handleDeleteTask = async (id: number) => {
     await deleteTask(id);
 
+    toast.success('Task Deleted Successfully');
+
     await loadTasks();
   }
+
+  const handleSaveEdit =
+  async (id:number) => {
+
+    await updateTask(
+      id,
+      {
+        title: editTitle,
+        description: editDescription,
+      }
+    );
+
+    toast.success('Task updated');
+
+    setEditingTaskId(null);
+
+    await loadTasks();
+  };
 
   useEffect(() => {
     loadTasks();
@@ -119,9 +147,48 @@ function App() {
       {filteredTasks.map(task => (
         <div className="card mb-3" key={task.id}>
           <div className="card-body">
-            <h5>{task.title}</h5>
+            {
+              editingTaskId === task.id ? (
+                  <>
+                    <input
+                      className="form-control mb-2"
+                      value={editTitle}
+                      onChange={(e) =>
+                        setEditTitle(e.target.value)
+                      }
+                    />
+                    <textarea
+                      className="form-control mb-2"
+                      value={editDescription}
+                      onChange={(e) =>
+                        setEditDescription(e.target.value)
+                      }
+                    />
+                  <button
+                    className="btn btn-success btn-sm me-2"
+                    onClick={() =>
+                      handleSaveEdit(task.id)
+                    }
+                  >
+                    Save
+                  </button>
 
-            <p>{task.description}</p>
+                  <button
+                    className="btn btn-secondary btn-sm me-2"
+                    onClick={() =>
+                      setEditingTaskId(null)
+                    }
+                  >
+                    Cancel
+                  </button>
+                  </>
+                ) : (
+                  <>
+                    <h5>{task.title}</h5>
+                    <p>{task.description}</p>
+                  </>
+                )
+            }
 
             <div className="mb-2">
               <label className="me-2">
@@ -145,23 +212,41 @@ function App() {
                 <option value="Completed">Completed</option>
               </select>
             </div>
+            {(editingTaskId !== task.id) && (
+              <>
+                <button
+                  className="btn btn-warning btn-sm me-2"
+                  onClick={() => {
+                    setEditingTaskId(task.id);
 
-            <button
-              className="btn btn-danger btn-sm"
-              onClick={() => {
+                    setEditTitle(task.title);
 
-                const confirmed = window.confirm('Are you sure you want to delete this task?');
+                    setEditDescription(task.description);
+                  }}
+                >
+                  Edit
+                </button>
 
-                if (confirmed) {
-                  handleDeleteTask(task.id);
-                }
-              }}
-            >
-              Delete
-            </button>
+                <button
+                  className="btn btn-danger btn-sm"
+                  onClick={() => {
+
+                    const confirmed = window.confirm('Are you sure you want to delete this task?');
+
+                    if (confirmed) {
+                      handleDeleteTask(task.id);
+                    }
+                  }}
+                >
+                  Delete
+                </button>
+
+              </>
+            )}
           </div>
         </div>
       ))}
+      <ToastContainer />
     </div>
   );
 }
