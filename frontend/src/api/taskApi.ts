@@ -4,7 +4,7 @@ import axios from "axios";
 const authHeader ='Basic ' + btoa('admin:nest-password');
 
 const api = axios.create({
-  baseURL :"http://localhost:3000/tasks",
+  baseURL :"http://172.23.207.222:3000/tasks",
   headers: {
     Authorization: authHeader,
   },
