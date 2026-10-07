@@ -41,4 +41,11 @@ export class TasksController {
     {
         return this.tasksService.deleteTask(Number(id));
     }
+
+    @Get('health')
+    getHealth() {
+        return {
+            status: 'UP',
+        };
+    }
 }

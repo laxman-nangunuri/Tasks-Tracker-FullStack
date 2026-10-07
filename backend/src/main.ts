@@ -22,7 +22,9 @@ app.useGlobalPipes(new ValidationPipe(),);
 
 app.enableCors();
 
-await app.listen(3000,'0.0.0.0');
+const port = process.env.PORT || 3000;
+
+await app.listen(Number(port));
 }
 
 bootstrap();
